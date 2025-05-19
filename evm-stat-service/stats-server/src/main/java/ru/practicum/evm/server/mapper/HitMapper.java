@@ -13,7 +13,7 @@ import static ru.practicum.evm.server.util.Constants.FORMATTER;
 @NoArgsConstructor
 public class HitMapper {
 
-    public Hit fromDto (EndpointHitDto endpointHitDto) {
+    public Hit fromDto(EndpointHitDto endpointHitDto) {
 
         Hit hit = new Hit();
         hit.setApp(endpointHitDto.getApp());
@@ -23,7 +23,7 @@ public class HitMapper {
         return hit;
     }
 
-    public EndpointHitDto toDto (Hit hit) {
+    public EndpointHitDto toDto(Hit hit) {
         EndpointHitDto endpointHitDto = new EndpointHitDto();
         endpointHitDto.setId(hit.getId());
         endpointHitDto.setApp(hit.getApp());
