@@ -23,7 +23,7 @@ services:
       - POSTGRES_PASSWORD=stats
 
   ewm-service:
-    build: main-service
+    build: evm-main-service
     image: java-explore-with-me-main-service
     container_name: main-service
     ports:
