@@ -1,6 +1,6 @@
 services:
   stats-server:
-    build: stats/stats-server
+    build: evm-stat-service/stats-server
     image: java-explore-with-me-stats
     container_name: stats-server
     ports:
