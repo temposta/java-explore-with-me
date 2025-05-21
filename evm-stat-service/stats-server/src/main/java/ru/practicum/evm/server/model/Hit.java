@@ -21,7 +21,7 @@ public class Hit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private Integer id;
 
     @NotNull
     @Column(name = "app", nullable = false, length = Integer.MAX_VALUE)

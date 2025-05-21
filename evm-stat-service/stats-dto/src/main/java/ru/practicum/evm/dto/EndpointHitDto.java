@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class EndpointHitDto {
 
-    private Long id; //Идентификатор записи
+    private Integer id; //Идентификатор записи
 
     @NotNull
     private String app; //Идентификатор сервиса для которого записывается информация
