@@ -28,7 +28,7 @@ public class ApiExceptionsHandler {
                                 .map(StackTraceElement::toString)
                                 .collect(Collectors.toList()))
                         .message(e.getMessage())
-                        .reason(e.getCause().getMessage())
+                        .reason("Integrity constraint has been violated.")
                         .status(HttpStatus.CONFLICT)
                         .timestamp(LocalDateTime.now())
                         .build());
@@ -77,8 +77,21 @@ public class ApiExceptionsHandler {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(ApiError.builder()
                         .message(e.getMessage())
-                        .reason(e.getReason())
+                        .reason("The required object was not found.")
                         .status(HttpStatus.NOT_FOUND)
+                        .timestamp(e.getTimestamp())
+                        .build());
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ApiError> handleForbiddenException(ForbiddenException e) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(ApiError.builder()
+                        .message(e.getMessage())
+                        .reason("For the requested operation the conditions are not met.")
+                        .status(HttpStatus.FORBIDDEN)
                         .timestamp(e.getTimestamp())
                         .build());
     }
@@ -86,12 +99,12 @@ public class ApiExceptionsHandler {
     @ExceptionHandler(IncorrectRequestException.class)
     public ResponseEntity<ApiError> handleIncorrectRequestException(IncorrectRequestException e) {
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
+                .status(HttpStatus.CONFLICT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(ApiError.builder()
                         .message(e.getMessage())
-                        .reason(e.getReason())
-                        .status(HttpStatus.BAD_REQUEST)
+                        .reason("Incorrectly made request.")
+                        .status(HttpStatus.CONFLICT)
                         .timestamp(e.getTimestamp())
                         .build());
     }

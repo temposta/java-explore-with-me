@@ -6,7 +6,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,11 +19,9 @@ public class User {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @NotNull
     @Column(name = "email", nullable = false)
     private String email;
 
-    @NotNull
     @Column(name = "name", nullable = false)
     private String name;
 

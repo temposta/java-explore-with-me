@@ -40,7 +40,6 @@ public class CategoryAdminController {
         log.info("Create new category: {}", newCategoryDto);
         return categoryService.createCategory(newCategoryDto);
     }
-//todo проверить ограничения БД на удаление связанных сущностей
 
     /**
      * Удаление категории.
