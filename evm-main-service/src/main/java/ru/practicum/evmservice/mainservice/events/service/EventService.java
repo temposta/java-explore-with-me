@@ -1,5 +1,6 @@
 package ru.practicum.evmservice.mainservice.events.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import ru.practicum.evmservice.mainservice.events.dto.EventFullDto;
 import ru.practicum.evmservice.mainservice.events.dto.EventShortDto;
 import ru.practicum.evmservice.mainservice.events.dto.EventSort;
@@ -25,7 +26,7 @@ public interface EventService {
 
     EventFullDto updateEventFromAdmin(int eventId, UpdateEventAdminRequest updateEventAdminRequest);
 
-    EventFullDto getPublicEvent(int eventId);
+    EventFullDto getPublicEvent(int eventId, HttpServletRequest request);
 
     List<EventShortDto> getEventsWithFilters(String text, List<Integer> categories, Boolean paid,
                                              LocalDateTime rangeStart, LocalDateTime rangeEnd,

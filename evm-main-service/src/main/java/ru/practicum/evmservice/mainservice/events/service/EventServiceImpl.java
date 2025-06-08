@@ -1,8 +1,11 @@
 package ru.practicum.evmservice.mainservice.events.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.evm.client.StatClient;
+import ru.practicum.evm.dto.ViewStatsDto;
 import ru.practicum.evmservice.mainservice.categories.model.Category;
 import ru.practicum.evmservice.mainservice.categories.repository.CategoryRepository;
 import ru.practicum.evmservice.mainservice.events.dto.EventFullDto;
@@ -37,6 +40,7 @@ public class EventServiceImpl implements EventService {
     private UserRepository userRepository;
     private CategoryRepository categoryRepository;
     private CustomEventRepository customEventRepository;
+    private StatClient statClient;
 
     @Override
     public List<EventShortDto> getEvents(int userId, int from, int size) {
@@ -133,15 +137,17 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventFullDto getPublicEvent(int eventId) {
+    public EventFullDto getPublicEvent(int eventId, HttpServletRequest request) {
         Event event = eventRepository.findEventByIdAndState(eventId, EventState.PUBLISHED)
                 .orElseThrow(
                         () -> new NotFoundException("Event with id=" + eventId + " was not found")
                 );
 
-        //TODO добавить обращение к сервису статистики и внедрить данные в EventFullDto
+        List<ViewStatsDto> views = statClient.getStat(event.getCreatedDate(), LocalDateTime.now(), List.of(request.getRequestURI()),true);
 
-        return EventMapper.INSTANCE.toFullDto(event);
+        EventFullDto eventFullDto = EventMapper.INSTANCE.toFullDto(event);
+        eventFullDto.setViews(views.get(0).getHits().intValue());
+        return eventFullDto;
     }
 
     @Override

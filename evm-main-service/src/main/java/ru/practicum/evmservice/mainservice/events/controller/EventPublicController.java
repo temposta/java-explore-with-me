@@ -1,5 +1,6 @@
 package ru.practicum.evmservice.mainservice.events.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Future;
 import lombok.AllArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.practicum.evm.client.StatClient;
 import ru.practicum.evmservice.mainservice.events.dto.EventFullDto;
 import ru.practicum.evmservice.mainservice.events.dto.EventShortDto;
 import ru.practicum.evmservice.mainservice.events.dto.EventSort;
@@ -27,6 +29,7 @@ import java.util.List;
 @AllArgsConstructor
 public class EventPublicController {
     private final EventService eventService;
+    private final StatClient statClient;
 
     /**
      * Получение событий с возможностью фильтрации
@@ -67,17 +70,16 @@ public class EventPublicController {
                                          @RequestParam(defaultValue = "false") Boolean onlyAvailable,
                                          @RequestParam(required = false) EventSort sort,
                                          @RequestParam(defaultValue = "0") int from,
-                                         @RequestParam(defaultValue = "10") int size) {
+                                         @RequestParam(defaultValue = "10") int size,
+                                         HttpServletRequest request) {
         log.info("getEvents from public called");
+        sendStatistics(request);
         if (rangeStart == null) {
             rangeStart = LocalDateTime.now();
         }
         if (rangeEnd == null) {
             rangeEnd = LocalDateTime.parse("9999-12-31T23:59:59");
         }
-//        if (rangeEnd.isBefore(rangeStart)) {
-//            throw new MethodArgumentNotValidException("Дата окончания интервала поиска должна быть позже даты начала поиска");
-//        }
         if (sort == null) {
             sort = EventSort.EVENT_DATE;
         }
@@ -98,9 +100,16 @@ public class EventPublicController {
      * @return информация о запрашиваемом событии
      */
     @GetMapping("/{eventId}")
-    public EventFullDto getPublicEvent(@PathVariable int eventId) {
+    public EventFullDto getPublicEvent(@PathVariable int eventId, HttpServletRequest request) {
         log.info("getEvent from public called");
-        return eventService.getPublicEvent(eventId);
+        sendStatistics(request);
+        return eventService.getPublicEvent(eventId, request);
     }
 
+    private void sendStatistics(HttpServletRequest request) {
+        statClient.postHit("${application.name}",
+                request.getRequestURI(),
+                request.getRemoteAddr(),
+                LocalDateTime.now());
+    }
 }
