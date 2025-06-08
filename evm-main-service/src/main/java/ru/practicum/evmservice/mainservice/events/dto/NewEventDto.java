@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -34,7 +34,7 @@ public class NewEventDto {
 
     private Boolean paid;
 
-    @Positive
+    @PositiveOrZero
     private Integer participantLimit;
 
     private Boolean requestModeration;
