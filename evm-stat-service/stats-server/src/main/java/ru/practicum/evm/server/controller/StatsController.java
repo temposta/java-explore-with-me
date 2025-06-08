@@ -3,6 +3,7 @@ package ru.practicum.evm.server.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.BadRequestException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -47,7 +48,10 @@ public class StatsController {
             @RequestParam @DateTimeFormat(pattern = DATE_FORMAT) LocalDateTime start,
             @RequestParam @DateTimeFormat(pattern = DATE_FORMAT) LocalDateTime end,
             @RequestParam(defaultValue = "") List<String> uris,
-            @RequestParam(defaultValue = "false") Boolean unique) {
+            @RequestParam(defaultValue = "false") Boolean unique) throws BadRequestException {
+        if(end.isBefore(start)) {
+            throw new BadRequestException("end Before start");
+        }
         log.info("Получен запрос статистики с параметрами: start={}, end={}, uris={}, unique={}",
                 start, end, uris, unique);
         Collection<ViewStatsDto> stats = statsService.getStats(start, end, uris, unique);
