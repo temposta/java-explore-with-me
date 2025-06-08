@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface EventRepository extends JpaRepository<Event, Integer>{
+public interface EventRepository extends JpaRepository<Event, Integer> {
 
     @Query("select e from Event as e where e.initiator.id = :userId order by e.id limit :limit offset :offset ")
     List<Event> findAllByInitiator_IdWithOffsetAndLimit(int userId, int offset, int limit);

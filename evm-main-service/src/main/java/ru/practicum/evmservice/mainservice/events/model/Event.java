@@ -110,13 +110,13 @@ public class Event {
         if (confirmedRequests == null) {
             confirmedRequests = 0;
         }
-        if(paid == null) {
+        if (paid == null) {
             paid = false;
         }
-        if(participantLimit == null) {
+        if (participantLimit == null) {
             participantLimit = 0;
         }
-        if(requestModeration == null) {
+        if (requestModeration == null) {
             requestModeration = true;
         }
     }

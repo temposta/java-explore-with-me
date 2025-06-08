@@ -22,13 +22,13 @@ public class Location {
      * Широта
      */
     @NotNull
-    @Column(nullable=false)
+    @Column(nullable = false)
     private Float lat;
 
     /**
      * Долгота
      */
     @NotNull
-    @Column(nullable=false)
+    @Column(nullable = false)
     private Float lon;
 }

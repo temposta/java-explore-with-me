@@ -96,7 +96,9 @@ public class EventServiceImpl implements EventService {
 
         List<Event> events = customEventRepository
                 .findEventsByFilter(users, states, categories, rangeStart, rangeEnd, from, size);
-        if (events.isEmpty()) {return List.of();}
+        if (events.isEmpty()) {
+            return List.of();
+        }
         return EventMapper.INSTANCE.toFullDtos(events);
     }
 
@@ -143,7 +145,7 @@ public class EventServiceImpl implements EventService {
                         () -> new NotFoundException("Event with id=" + eventId + " was not found")
                 );
 
-        List<ViewStatsDto> views = statClient.getStat(event.getCreatedDate(), LocalDateTime.now(), List.of(request.getRequestURI()),true);
+        List<ViewStatsDto> views = statClient.getStat(event.getCreatedDate(), LocalDateTime.now(), List.of(request.getRequestURI()), true);
 
         EventFullDto eventFullDto = EventMapper.INSTANCE.toFullDto(event);
         eventFullDto.setViews(views.get(0).getHits().intValue());
@@ -182,10 +184,6 @@ public class EventServiceImpl implements EventService {
                 }
             }
         }
-
-
-        //TODO добавить обращение к сервису статистики и внедрить данные
-
         switch (sort) {
             case EVENT_DATE -> {
                 return EventMapper.INSTANCE.toShortDtos(events);
@@ -210,9 +208,6 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.save(EventMapper.INSTANCE.toEvent(newEventDto));
         event.setInitiator(user);
         event.setCategory(category);
-
-        //TODO добавить обращение к сервису статистики и внедрить данные в EventFullDto
-
         return EventMapper.INSTANCE.toFullDto(event);
     }
 
