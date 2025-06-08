@@ -107,7 +107,7 @@ public class EventPublicController {
     }
 
     private void sendStatistics(HttpServletRequest request) {
-        statClient.postHit("${application.name}",
+        statClient.postHit("ewm-main-service",
                 request.getRequestURI(),
                 request.getRemoteAddr(),
                 LocalDateTime.now());
