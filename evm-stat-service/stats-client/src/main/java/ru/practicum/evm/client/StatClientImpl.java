@@ -20,7 +20,7 @@ public class StatClientImpl implements StatClient {
     private final RestClient restClient;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public StatClientImpl(@Value("http://localhost:9090") String serverUrl) {
+    public StatClientImpl(@Value("${stats.url:" + "http://localhost:9090" + "}") String serverUrl) {
         restClient = RestClient.builder()
                 .baseUrl(serverUrl)
                 .build();
