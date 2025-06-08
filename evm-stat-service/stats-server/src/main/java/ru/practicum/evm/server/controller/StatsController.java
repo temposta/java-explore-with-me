@@ -49,7 +49,7 @@ public class StatsController {
             @RequestParam @DateTimeFormat(pattern = DATE_FORMAT) LocalDateTime end,
             @RequestParam(defaultValue = "") List<String> uris,
             @RequestParam(defaultValue = "false") Boolean unique) throws BadRequestException {
-        if(end.isBefore(start)) {
+        if (end.isBefore(start)) {
             throw new BadRequestException("end Before start");
         }
         log.info("Получен запрос статистики с параметрами: start={}, end={}, uris={}, unique={}",
