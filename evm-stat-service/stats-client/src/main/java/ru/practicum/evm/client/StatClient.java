@@ -5,7 +5,7 @@ import ru.practicum.evm.dto.ViewStatsDto;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface StatClient{
+public interface StatClient {
 
     void postHit(String app, String uri, String ip, LocalDateTime timestamp);
 

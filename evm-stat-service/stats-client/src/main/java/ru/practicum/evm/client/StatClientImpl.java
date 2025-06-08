@@ -44,8 +44,8 @@ public class StatClientImpl implements StatClient {
                 .contentType(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .onStatus(code -> code.is4xxClientError() || code.is5xxServerError(),
-                        (req, resp) ->{
-                    throw new ConnectException("Connection refused");
+                        (req, resp) -> {
+                            throw new ConnectException("Connection refused");
                         })
                 .toBodilessEntity();
     }
@@ -54,20 +54,22 @@ public class StatClientImpl implements StatClient {
     public List<ViewStatsDto> getStat(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
 
         List<ViewStatsDto> response = restClient.get()
-                .uri(UriBuilder ->{UriBuilder.path("/stats")
-                        .queryParam("start", start.format(formatter))
-                        .queryParam("end", end.format(formatter));
+                .uri(UriBuilder -> {
+                    UriBuilder.path("/stats")
+                            .queryParam("start", start.format(formatter))
+                            .queryParam("end", end.format(formatter));
                     if (uris != null && !uris.isEmpty()) {
                         UriBuilder.queryParam("uris", uris);
                     }
                     if (unique != null) {
                         UriBuilder.queryParam("unique", unique);
                     }
-                    return UriBuilder.build();})
+                    return UriBuilder.build();
+                })
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .onStatus(code -> code.is4xxClientError() || code.is5xxServerError(),
-                        (req, resp) ->{
+                        (req, resp) -> {
                             throw new ConnectException("Connection refused");
                         })
                 .body(new ParameterizedTypeReference<>() {
