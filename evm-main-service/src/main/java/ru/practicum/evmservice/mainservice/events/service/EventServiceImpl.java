@@ -54,7 +54,6 @@ public class EventServiceImpl implements EventService {
         checkUser(userId);
         Event event = checkEvent(eventId);
         checkUserRights(userId, event);
-        //TODO добавить обращение к сервису статистики и внедрить данные в EventFullDto
         return EventMapper.INSTANCE.toFullDto(event);
     }
 
@@ -235,7 +234,10 @@ public class EventServiceImpl implements EventService {
     }
 
     private void checkEventDate(LocalDateTime eventDate) {
-        if (eventDate.isBefore(LocalDateTime.now().plusHours(2))) {
+
+        final LocalDateTime deadlineDate = LocalDateTime.now().plusHours(2);
+
+        if (eventDate.isBefore(deadlineDate)) {
             throw new ForbiddenException("Field: eventDate. Error: Дата и время на которые намечено событие не может " +
                                          "быть раньше, чем через два часа от текущего момента. Value: " +
                                          eventDate.format(DateTimeFormatter.ISO_DATE_TIME));

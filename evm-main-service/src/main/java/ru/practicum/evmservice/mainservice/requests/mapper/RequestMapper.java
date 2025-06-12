@@ -19,20 +19,4 @@ public interface RequestMapper {
 
     List<ParticipationRequestDto> toParticipationDtoList(List<Request> requests);
 
-
-//    @Mapping(target = "createdOn", source = "createdDate")
-//    EventFullDto toFullDto(Event event);
-//
-//    @Mapping(target = "category.id", source = "category")
-//    @Mapping(target = "initiator.id", source = "initiatorId")
-//    @Mapping(target = "location.lat", expression = "java(locationDto.getLat())")
-//    @Mapping(target = "location.lon", expression = "java(locationDto.getLon())")
-//    Event toEvent(NewEventDto newEventDto);
-//
-//    EventShortDto toShortDto(Event event);
-//
-//    List<EventShortDto> toShortDtos(List<Event> events);
-//
-//    List<EventFullDto> toFullDtos(List<Event> events);
-
 }

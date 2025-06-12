@@ -45,8 +45,8 @@ public class RequestServiceImpl implements RequestService {
         Event event = checkEvent(eventId);
         Optional<Request> requestOptional = requestRepository.findByRequesterIdAndEventId(userId, eventId);
         if (requestOptional.isPresent()
-            && (requestOptional.get().getStatus().equals(RequestStatus.PENDING)
-            || requestOptional.get().getStatus().equals(RequestStatus.CONFIRMED))) {
+            && (RequestStatus.PENDING.equals(requestOptional.get().getStatus())
+                || requestOptional.get().getStatus().equals(RequestStatus.CONFIRMED))) {
             throw new ForbiddenException("You are not allowed to create a request: request already exists");
         }
         if (Objects.equals(event.getInitiator().getId(), userId)) {
@@ -103,7 +103,6 @@ public class RequestServiceImpl implements RequestService {
         checkUser(userId);
         Event event = checkEvent(eventId);
         if (event.getParticipantLimit() == 0 || event.getRequestModeration() == false) {
-            //TODO проверить случай. Возможно нужно возвращать списки заявок
             throw new IncorrectRequestException("You cannot update requests for a current user with id=" + userId);
         }
         if (event.getParticipantLimit() <= event.getConfirmedRequests()) {
