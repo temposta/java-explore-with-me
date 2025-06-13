@@ -1,0 +1,1078 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Documentation \"Explore With Me - Feature Comments\" API v1.0",
+    "description": "\"Explore With Me - Feature Comments\" API сервер",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "description": "Generated server url",
+      "url": "http://localhost:8080"
+    }
+  ],
+  "tags": [
+    {
+      "description": "Закрытый API для работы с комментариями",
+      "name": "Private: Комментарии"
+    },
+    {
+      "description": "API для работы с комментариями",
+      "name": "Admin: Комментарии"
+    },
+    {
+      "description": "Публичный API для работы с комментариями",
+      "name": "Public: Комментарии"
+    }
+  ],
+  "paths": {
+    "/admin/comments": {
+      "get": {
+        "description": "Эндпоинт возвращает полную информацию обо всех комментариях подходящих под переданные условия\n\nВ случае, если по заданным фильтрам не найдено ни одного комментария, возвращает пустой список",
+        "operationId": "getComments_2",
+        "parameters": [
+          {
+            "description": "список id пользователей, чьи комментарии нужно найти",
+            "in": "query",
+            "name": "users",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int64"
+              }
+            }
+          },
+          {
+            "description": "список состояний в которых находятся искомые комментарии",
+            "in": "query",
+            "name": "states",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "description": "список id категорий в которых будет вестись поиск",
+            "in": "query",
+            "name": "categories",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int64"
+              }
+            }
+          },
+          {
+            "description": "дата и время не раньше которых создан комментарий",
+            "in": "query",
+            "name": "rangeStart",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "дата и время не позже которых создан комментарий",
+            "in": "query",
+            "name": "rangeEnd",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "количество комментариев, которые нужно пропустить для формирования текущего набора",
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "minimum": 0,
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "description": "количество комментариев в наборе",
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CommentFullDto"
+                  }
+                }
+              }
+            },
+            "description": "События найдены"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "BAD_REQUEST",
+                  "reason": "Incorrectly made request.",
+                  "message": "Failed to convert value of type java.lang.String to required type int; nested exception is java.lang.NumberFormatException: For input string: ad",
+                  "timestamp": "2022-09-07 09:10:50"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          }
+        },
+        "summary": "Поиск комментариев",
+        "tags": [
+          "Admin: Комментарии"
+        ]
+      }
+    },
+    "/admin/comments/{commentId}": {
+      "patch": {
+        "description": "Редактирование комментария администратором. Валидация данных не требуется.\nОбратите внимание:\n - событие можно публиковать, только если оно в состоянии ожидания публикации (Ожидается код ошибки 409)\n- событие можно отклонить, только если оно еще не опубликовано (Ожидается код ошибки 409)",
+        "operationId": "updateComment_1",
+        "parameters": [
+          {
+            "description": "id комментария",
+            "in": "path",
+            "name": "commentId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCommentAdminRequest"
+              }
+            }
+          },
+          "description": "Данные для изменения комментария",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentFullDto"
+                }
+              }
+            },
+            "description": "Комментарий отредактирован"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "NOT_FOUND",
+                  "reason": "The required object was not found.",
+                  "message": "Event with id=2 was not found",
+                  "timestamp": "2022-09-07 09:10:50"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Событие не найдено или недоступно"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FORBIDDEN",
+                  "reason": "For the requested operation the conditions are not met.",
+                  "message": "Cannot publish the event because it's not in the right state: PUBLISHED",
+                  "timestamp": "2022-09-07 09:10:50"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Комментарий не удовлетворяет правилам редактирования"
+          }
+        },
+        "summary": "Редактирование данных комментария и его статуса (отклонение/публикация).",
+        "tags": [
+          "Admin: Комментарии"
+        ]
+      }
+    },
+    "/comments": {
+      "get": {
+        "description": "Обратите внимание: \n- это публичный эндпоинт, соответственно в выдаче должны быть только опубликованные комментарии\n- текстовый поиск должен быть без учета регистра букв\n- если в запросе не указан диапазон дат [rangeStart-rangeEnd], то нужно выгружать все комментарии\nВ случае, если по заданным фильтрам не найдено ни одного комментария, возвращает пустой список",
+        "operationId": "getComments_1",
+        "parameters": [
+          {
+            "description": "текст для поиска в содержимом комментария",
+            "in": "query",
+            "name": "text",
+            "required": false,
+            "schema": {
+              "maxLength": 500,
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          {
+            "description": "список идентификаторов категорий в которых будет вестись поиск",
+            "in": "query",
+            "name": "categories",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int64"
+              }
+            }
+          },
+          {
+            "description": "дата и время не раньше которых был опубликован комментарий",
+            "in": "query",
+            "name": "rangeStart",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "дата и время не позже которых был опубликован комментарий",
+            "in": "query",
+            "name": "rangeEnd",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Вариант сортировки: от старых к новым или от новых к старым",
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          },
+          {
+            "description": "количество комментариев, которые нужно пропустить для формирования текущего набора",
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "minimum": 0,
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "description": "количество комментариев в наборе",
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CommentShortDto"
+                  }
+                }
+              }
+            },
+            "description": "Комментарии найдены"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "BAD_REQUEST",
+                  "reason": "Incorrectly made request.",
+                  "message": "Comments must be published",
+                  "timestamp": "2022-09-07 09:10:50"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          }
+        },
+        "summary": "Получение комментариев с возможностью фильтрации",
+        "tags": [
+          "Public: Комментарии"
+        ]
+      }
+    },
+    "/comments/{commentId}": {
+      "get": {
+        "description": "Обратите внимание:\n- комментарий должен быть опубликован\nВ случае, если комментарий с заданным id не найден, возвращает статус код 404",
+        "operationId": "getComment_1",
+        "parameters": [
+          {
+            "description": "id комментария",
+            "in": "path",
+            "name": "commentId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentFullDto"
+                }
+              }
+            },
+            "description": "Комментарий найден"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "BAD_REQUEST",
+                  "reason": "Incorrectly made request.",
+                  "message": "Failed to convert value of type java.lang.String to required type int; nested exception is java.lang.NumberFormatException: For input string: ad",
+                  "timestamp": "2022-09-07 09:10:50"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "NOT_FOUND",
+                  "reason": "The required object was not found.",
+                  "message": "Event with id=13 was not found",
+                  "timestamp": "2022-09-07 09:10:50"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Комментарий не найден или недоступен"
+          }
+        },
+        "summary": "Получение подробной информации об опубликованном комментарии по его идентификатору",
+        "tags": [
+          "Public: Комментарии"
+        ]
+      }
+    },
+    "/users/{userId}/comments": {
+      "get": {
+        "description": "В случае, если по заданным фильтрам не найдено ни одного комментария, возвращает пустой список",
+        "operationId": "getComments",
+        "parameters": [
+          {
+            "description": "id текущего пользователя",
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "description": "количество элементов, которые нужно пропустить для формирования текущего набора",
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "minimum": 0,
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "description": "количество элементов в наборе",
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CommentShortDto"
+                  }
+                }
+              }
+            },
+            "description": "Комментарии найдены"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "BAD_REQUEST",
+                  "reason": "Incorrectly made request.",
+                  "message": "Failed to convert value of type java.lang.String to required type int; nested exception is java.lang.NumberFormatException: For input string: ad",
+                  "timestamp": "2022-09-07 09:10:50"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          }
+        },
+        "summary": "Получение комментариев, добавленных текущим пользователем",
+        "tags": [
+          "Private: Комментарии"
+        ]
+      },
+      "post": {
+        "description": "Обратите внимание: комментарий может быть оставлен только на чужое событие",
+        "operationId": "addComment",
+        "parameters": [
+          {
+            "description": "id текущего пользователя",
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewCommentDto"
+              }
+            }
+          },
+          "description": "данные добавляемого комментария",
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentFullDto"
+                }
+              }
+            },
+            "description": "Комментарий добавлен"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "BAD_REQUEST",
+                  "reason": "Incorrectly made request.",
+                  "message": "Field: category. Error: must not be blank. Value: null",
+                  "timestamp": "2022-09-07 09:10:50"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FORBIDDEN",
+                  "reason": "For the requested operation the conditions are not met.",
+                  "message": "Field: eventDate. Error: должно содержать дату, которая еще не наступила. Value: 2020-12-31T15:10:05",
+                  "timestamp": "2022-09-07 09:10:50"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Комментарий не удовлетворяет правилам создания"
+          }
+        },
+        "summary": "Добавление нового комментария",
+        "tags": [
+          "Private: Комментарии"
+        ]
+      }
+    },
+    "/users/{userId}/comments/{commentId}": {
+      "get": {
+        "description": "В случае, если комментария с заданным id не найдено, возвращает статус код 404",
+        "operationId": "getComment",
+        "parameters": [
+          {
+            "description": "id текущего пользователя",
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "description": "id комментария",
+            "in": "path",
+            "name": "commentId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentFullDto"
+                }
+              }
+            },
+            "description": "Комментарий найден"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "BAD_REQUEST",
+                  "reason": "Incorrectly made request.",
+                  "message": "Failed to convert value of type java.lang.String to required type long; nested exception is java.lang.NumberFormatException: For input string: ad",
+                  "timestamp": "2022-09-07 09:10:50"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "NOT_FOUND",
+                  "reason": "The required object was not found.",
+                  "message": "Comment with id=13 was not found",
+                  "timestamp": "2022-09-07 09:10:50"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Комментарий не найден или недоступен"
+          }
+        },
+        "summary": "Получение полной информации о комментарии добавленном текущим пользователем",
+        "tags": [
+          "Private: Комментарии"
+        ]
+      },
+      "patch": {
+        "description": "Обратите внимание:\n- изменить можно только комментарии в состоянии ожидания модерации (Ожидается код ошибки 409)\n",
+        "operationId": "updateComment",
+        "parameters": [
+          {
+            "description": "id текущего пользователя",
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "description": "id редактируемого события",
+            "in": "path",
+            "name": "commentId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCommentUserRequest"
+              }
+            }
+          },
+          "description": "Новые данные комментария",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentFullDto"
+                }
+              }
+            },
+            "description": "Комментарий обновлен"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "BAD_REQUEST",
+                  "reason": "Incorrectly made request.",
+                  "message": "Event must not be published",
+                  "timestamp": "2022-09-07 09:10:50"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "NOT_FOUND",
+                  "reason": "The required object was not found.",
+                  "message": "Comment with id=283 was not found",
+                  "timestamp": "2022-09-07 09:10:50"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Комментарий не найден или недоступен"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FORBIDDEN",
+                  "reason": "For the requested operation the conditions are not met.",
+                  "message": "Only pending comments can be changed",
+                  "timestamp": "2022-09-07 09:10:50"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Комментарий не удовлетворяет правилам редактирования"
+          }
+        },
+        "summary": "Изменение комментария добавленного текущим пользователем",
+        "tags": [
+          "Private: Комментарии"
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApiError": {
+        "type": "object",
+        "properties": {
+          "errors": {
+            "type": "array",
+            "description": "Список стектрейсов или описания ошибок",
+            "example": [],
+            "items": {
+              "type": "string",
+              "description": "Список стектрейсов или описания ошибок",
+              "example": "[]"
+            }
+          },
+          "message": {
+            "type": "string",
+            "description": "Сообщение об ошибке",
+            "example": "Only pending or canceled events can be changed"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Общее описание причины ошибки",
+            "example": "For the requested operation the conditions are not met."
+          },
+          "status": {
+            "type": "string",
+            "description": "Код статуса HTTP-ответа",
+            "example": "FORBIDDEN",
+            "enum": [
+              "100 CONTINUE",
+              "101 SWITCHING_PROTOCOLS",
+              "102 PROCESSING",
+              "103 CHECKPOINT",
+              "200 OK",
+              "201 CREATED",
+              "202 ACCEPTED",
+              "203 NON_AUTHORITATIVE_INFORMATION",
+              "204 NO_CONTENT",
+              "205 RESET_CONTENT",
+              "206 PARTIAL_CONTENT",
+              "207 MULTI_STATUS",
+              "208 ALREADY_REPORTED",
+              "226 IM_USED",
+              "300 MULTIPLE_CHOICES",
+              "301 MOVED_PERMANENTLY",
+              "302 FOUND",
+              "302 MOVED_TEMPORARILY",
+              "303 SEE_OTHER",
+              "304 NOT_MODIFIED",
+              "305 USE_PROXY",
+              "307 TEMPORARY_REDIRECT",
+              "308 PERMANENT_REDIRECT",
+              "400 BAD_REQUEST",
+              "401 UNAUTHORIZED",
+              "402 PAYMENT_REQUIRED",
+              "403 FORBIDDEN",
+              "404 NOT_FOUND",
+              "405 METHOD_NOT_ALLOWED",
+              "406 NOT_ACCEPTABLE",
+              "407 PROXY_AUTHENTICATION_REQUIRED",
+              "408 REQUEST_TIMEOUT",
+              "409 CONFLICT",
+              "410 GONE",
+              "411 LENGTH_REQUIRED",
+              "412 PRECONDITION_FAILED",
+              "413 PAYLOAD_TOO_LARGE",
+              "413 REQUEST_ENTITY_TOO_LARGE",
+              "414 URI_TOO_LONG",
+              "414 REQUEST_URI_TOO_LONG",
+              "415 UNSUPPORTED_MEDIA_TYPE",
+              "416 REQUESTED_RANGE_NOT_SATISFIABLE",
+              "417 EXPECTATION_FAILED",
+              "418 I_AM_A_TEAPOT",
+              "419 INSUFFICIENT_SPACE_ON_RESOURCE",
+              "420 METHOD_FAILURE",
+              "421 DESTINATION_LOCKED",
+              "422 UNPROCESSABLE_ENTITY",
+              "423 LOCKED",
+              "424 FAILED_DEPENDENCY",
+              "425 TOO_EARLY",
+              "426 UPGRADE_REQUIRED",
+              "428 PRECONDITION_REQUIRED",
+              "429 TOO_MANY_REQUESTS",
+              "431 REQUEST_HEADER_FIELDS_TOO_LARGE",
+              "451 UNAVAILABLE_FOR_LEGAL_REASONS",
+              "500 INTERNAL_SERVER_ERROR",
+              "501 NOT_IMPLEMENTED",
+              "502 BAD_GATEWAY",
+              "503 SERVICE_UNAVAILABLE",
+              "504 GATEWAY_TIMEOUT",
+              "505 HTTP_VERSION_NOT_SUPPORTED",
+              "506 VARIANT_ALSO_NEGOTIATES",
+              "507 INSUFFICIENT_STORAGE",
+              "508 LOOP_DETECTED",
+              "509 BANDWIDTH_LIMIT_EXCEEDED",
+              "510 NOT_EXTENDED",
+              "511 NETWORK_AUTHENTICATION_REQUIRED"
+            ]
+          },
+          "timestamp": {
+            "type": "string",
+            "description": "Дата и время когда произошла ошибка (в формате \"yyyy-MM-dd HH:mm:ss\")",
+            "example": "2022-06-09 06:27:23"
+          }
+        },
+        "description": "Сведения об ошибке"
+      },
+      "CommentFullDto": {
+        "required": [
+          "comment",
+          "event",
+          "createdOn",
+          "id",
+          "author",
+          "state"
+        ],
+        "type": "object",
+        "properties": {
+          "comment": {
+            "type": "string",
+            "description": "Краткое описание",
+            "example": "Очень здорово было ...."
+          },
+          "event": {
+            "type": "integer",
+            "description": "Идентификатор события к которому относится комментарий",
+            "format": "int64",
+            "example": 1
+          },
+          "createdOn": {
+            "type": "string",
+            "description": "Дата и время создания комментария (в формате \"yyyy-MM-dd HH:mm:ss\")",
+            "example": "2022-09-06 11:00:23"
+          },
+          "id": {
+            "type": "integer",
+            "description": "Идентификатор",
+            "format": "int64",
+            "example": 1
+          },
+          "author": {
+            "$ref": "#/components/schemas/UserShortDto"
+          },
+          "publishedOn": {
+            "type": "string",
+            "description": "Дата и время публикации комментария (в формате \"yyyy-MM-dd HH:mm:ss\")",
+            "example": "2022-09-06 15:10:05"
+          },
+          "state": {
+            "type": "string",
+            "description": "Список состояний жизненного цикла комментария",
+            "example": "PUBLISHED",
+            "enum": [
+              "PENDING",
+              "PUBLISHED",
+              "REJECTED",
+              "DELETED"
+            ]
+          },
+          "reason": {
+            "maxLength": 500,
+            "minLength": 20,
+            "type": "string",
+            "description": "Причина отклонения публикации",
+            "example": "Комментарий не соответствует правилам сервиса"
+          }
+        }
+      },
+      "CommentShortDto": {
+        "required": [
+          "comment",
+          "event",
+          "createdOn",
+          "id",
+          "state"
+        ],
+        "type": "object",
+        "properties": {
+          "comment": {
+            "type": "string",
+            "description": "Краткое описание",
+            "example": "Очень здорово было ...."
+          },
+          "event": {
+            "type": "integer",
+            "description": "Идентификатор события к которому относится комментарий",
+            "format": "int64",
+            "example": 1
+          },
+          "createdOn": {
+            "type": "string",
+            "description": "Дата и время создания комментария (в формате \"yyyy-MM-dd HH:mm:ss\")",
+            "example": "2022-09-06 11:00:23"
+          },
+          "id": {
+            "type": "integer",
+            "description": "Идентификатор",
+            "format": "int64",
+            "example": 1
+          },
+          "publishedOn": {
+            "type": "string",
+            "description": "Дата и время публикации комментария (в формате \"yyyy-MM-dd HH:mm:ss\")",
+            "example": "2022-09-06 15:10:05"
+          },
+          "state": {
+            "type": "string",
+            "description": "Список состояний жизненного цикла комментария",
+            "example": "PUBLISHED",
+            "enum": [
+              "PENDING",
+              "PUBLISHED",
+              "REJECTED",
+              "DELETED"
+            ]
+          }
+        }
+      },
+      "NewCommentDto": {
+        "required": [
+          "event",
+          "comment"
+        ],
+        "type": "object",
+        "properties": {
+          "event": {
+            "type": "integer",
+            "description": "id события к которому относится комментарий",
+            "format": "int64",
+            "example": 2
+          },
+          "comment": {
+            "maxLength": 7000,
+            "minLength": 20,
+            "type": "string",
+            "description": "Текст комментария",
+            "example": "Сплав на байдарках похож на полет. Оставляет яркие впечатления."
+          }
+        },
+        "description": "Новый комментарий"
+      },
+      "UpdateCommentAdminRequest": {
+        "required": [
+          "commentStateAction"
+        ],
+        "type": "object",
+        "properties": {
+          "reason": {
+            "maxLength": 500,
+            "minLength": 20,
+            "type": "string",
+            "description": "Причина отклонения публикации",
+            "example": "Комментарий не соответствует правилам сервиса"
+          },
+          "commentStateAction": {
+            "type": "string",
+            "description": "Новое состояние комментария",
+            "enum": [
+              "PUBLISH_COMMENT",
+              "REJECT_COMMENT"
+            ]
+          }
+        },
+        "description": "Данные для отклонения или публикации комментария. Причина отклонения администратором обязательна."
+      },
+      "UpdateCommentUserRequest": {
+        "type": "object",
+        "properties": {
+          "comment": {
+            "maxLength": 7000,
+            "minLength": 20,
+            "type": "string",
+            "description": "Текст комментария",
+            "example": "Сплав на байдарках похож на полет. Оставляет яркие впечатления."
+          },
+          "stateAction": {
+            "type": "string",
+            "description": "Изменение состояния комментария",
+            "example": "CANCEL_REVIEW",
+            "enum": [
+              "SEND_TO_REVIEW",
+              "CANCEL_REVIEW"
+            ]
+          }
+        },
+        "description": "Данные для изменения комментария. Если поле в запросе не указано (равно null) - значит изменение этих данных не требуется."
+      },
+      "UserShortDto": {
+        "required": [
+          "id",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Идентификатор",
+            "format": "int64",
+            "example": 3
+          },
+          "name": {
+            "type": "string",
+            "description": "Имя",
+            "example": "Фёдоров Матвей"
+          }
+        },
+        "description": "Пользователь (краткая информация)"
+      },
+      "CategoryDto": {
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Идентификатор категории",
+            "format": "int64",
+            "readOnly": true,
+            "example": 1
+          },
+          "name": {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string",
+            "description": "Название категории",
+            "example": "Концерты"
+          }
+        },
+        "description": "Категория"
+      }
+    }
+  }
+}
