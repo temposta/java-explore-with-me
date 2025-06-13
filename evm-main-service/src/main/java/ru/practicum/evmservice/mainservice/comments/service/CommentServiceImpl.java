@@ -138,7 +138,7 @@ public class CommentServiceImpl implements CommentService {
     public CommentFullDto getPublicComment(int commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new NotFoundException("Comment with id=" + commentId + " was not found"));
-        if(!CommentState.PUBLISHED.equals(comment.getStatus())) {
+        if (!CommentState.PUBLISHED.equals(comment.getStatus())) {
             throw new IncorrectRequestException("Comment with id=" + commentId + " is not published");
         }
         return CommentMapper.INSTANCE.toCommentFullDto(comment);
